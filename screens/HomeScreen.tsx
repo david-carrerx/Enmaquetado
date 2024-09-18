@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent, Dimensions, FlatList, ActivityIndicator } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
 import poster from '../assets/poster.jpg';
 import promocion from "../assets/promocion.png"
@@ -10,8 +10,44 @@ import moreIcon from '../assets/plus.png'
 import motoIcon from '../assets/moto.png'
 import promoIcon from '../assets/promo.png'
 import miniIcon from '../assets/iconMoto.png'
+import { useInfiniteQuery } from 'react-query';
+
+const { width } = Dimensions.get('window');
+
 
 export default function HomeScreen() {
+  const [images, setImages] = useState([poster, promocion]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const renderItem = ({ item }: { item: any }) => (
+    <Image
+      source={item}
+      style={styles.image}
+      resizeMode='cover'
+    />
+  );
+
+  const renderLoader = () => {
+    return(
+      <View>
+        <ActivityIndicator size="large" color="#aaa"></ActivityIndicator>
+      </View>
+    )
+  }
+
+  const loadMoreItem = () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    setTimeout(() => {
+      setImages(prevImages => [
+        ...prevImages,
+        poster, 
+        promocion
+      ]);
+      setIsLoading(false);
+    }, 0); 
+  }  
+  
   return (
     <View style={styles.container}>
         <View style={styles.header}>
@@ -20,10 +56,18 @@ export default function HomeScreen() {
       </View>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.imagesScroll}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} >
-            <Image source={poster} style={styles.image} resizeMode='cover'/>
-            <Image source={poster} style={styles.image} resizeMode='cover'/>
-            </ScrollView>
+            <FlatList
+              data={images}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              //ListFooterComponent={renderLoader}
+              onEndReached={loadMoreItem}
+              onEndReachedThreshold={0}
+              ListFooterComponent={isLoading ? renderLoader : null}
+            >
+            </FlatList>
         </View>
         
         <View style={styles.buttonsContainer}>
@@ -61,7 +105,7 @@ export default function HomeScreen() {
 
         <View style={styles.promoScroll}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} >
-                <Image source={promocion}  style={styles.image} resizeMode="stretch"/>
+                <Image source={promocion}  style={styles.promoImage} resizeMode="stretch"/>
             </ScrollView>
         </View>
 
@@ -126,6 +170,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff451b',
     zIndex: 0, 
     elevation: 1,
+    marginBottom: 3
   },
   scrollView: {
     flex: 1,
@@ -145,11 +190,20 @@ const styles = StyleSheet.create({
   imagesScroll: {
     height: '30%',
     width: "100%",
+    borderRadius: 5,
+    paddingTop: 2
   },
   image: {
     height: '100%',
-    width: 410,
-    marginRight: 10, 
+    width: 390,
+    marginRight: 10,
+    borderRadius: 5
+  },
+  promoImage: {
+    height: '100%',
+    width: width - 10,
+     
+    borderRadius: 5
   },
    buttonsContainer: {
     flexDirection: 'row',
@@ -188,6 +242,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     height: "15%",
     width: "100%",
+    borderRadius: 5
   },
   products:{
     height:"40%",
