@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, NativeScrollEvent, NativeSyntheticEvent, Dimensions, FlatList, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList, ActivityIndicator } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
 import poster from '../assets/poster.jpg';
 import promocion from "../assets/promocion.png"
@@ -10,10 +10,8 @@ import moreIcon from '../assets/plus.png'
 import motoIcon from '../assets/moto.png'
 import promoIcon from '../assets/promo.png'
 import miniIcon from '../assets/iconMoto.png'
-import { useInfiniteQuery } from 'react-query';
 
 const { width } = Dimensions.get('window');
-
 
 export default function HomeScreen() {
   const [images, setImages] = useState([poster, promocion]);
@@ -22,7 +20,7 @@ export default function HomeScreen() {
   const renderItem = ({ item }: { item: any }) => (
     <Image
       source={item}
-      style={styles.image}
+      style={styles.eventImage}
       resizeMode='cover'
     />
   );
@@ -112,13 +110,15 @@ export default function HomeScreen() {
         <View style={styles.products}>
             <Text style={styles.productText}>Los mejores productos 🔥</Text>
             <View style={styles.separatorOrange} />
-            <ScrollView horizontal showsHorizontalScrollIndicator={true} >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} >
             <View  style={styles.card}>
                 <View style={styles.productNameContainer}>
                     <Text style={styles.productName}>Motocicleta</Text>
                     <Image source={miniIcon} style={styles.productIcon} />
                 </View>
+                <View style={styles.productImageContainer}>
                   <Image source={motorcycle} style={styles.productImage} resizeMode="cover" />
+                </View>
                 <Text style={styles.productBrand}>Italika 2023</Text>
                 <Text style={styles.productStatus}>Usado - Como nuevo</Text>
                 <View style={styles.separator} />
@@ -127,10 +127,10 @@ export default function HomeScreen() {
 
               <View  style={styles.card}>
                 <View style={styles.productNameContainer}>
-                <Text style={styles.productName}>Motocicleta</Text>
-                <Image source={miniIcon} style={styles.productIcon} />
+                  <Text style={styles.productName}>Motocicleta</Text>
+                  <Image source={miniIcon} style={styles.productIcon} />
                 </View>
-                <View style={styles.imageContainer}>
+                <View style={styles.productImageContainer}>
                   <Image source={motorcycle} style={styles.productImage} resizeMode="cover" />
                 </View>
                 <Text style={styles.productBrand}>Italika 2023</Text>
@@ -144,7 +144,7 @@ export default function HomeScreen() {
                 <Text style={styles.productName}>Motocicleta</Text>
                 <Image source={miniIcon} style={styles.productIcon} />
                 </View>
-                <View style={styles.imageContainer}>
+                <View style={styles.productImageContainer}>
                   <Image source={motorcycle} style={styles.productImage} resizeMode="cover" />
                 </View>
                 <Text style={styles.productBrand}>Italika 2023</Text>
@@ -172,13 +172,6 @@ const styles = StyleSheet.create({
     elevation: 1,
     marginBottom: 3
   },
-  scrollView: {
-    flex: 1,
-    marginHorizontal: '1%',
-  },
-  scrollContent:{
-    flexGrow: 1
-  },
   headerTitle: {
     fontSize: 20,
     color: '#fff',
@@ -187,38 +180,40 @@ const styles = StyleSheet.create({
     paddingTop: '7%',
     marginBottom: 9
   },
+  scrollView: {
+    flex: 1,
+    marginHorizontal: '1%',
+  },
+  scrollContent:{
+    flexGrow: 1
+  },
   imagesScroll: {
     height: '30%',
-    width: "100%",
+    width: width,
     borderRadius: 5,
-    paddingTop: 2
+    paddingTop: 2,
+    backgroundColor: 'pink'
   },
-  image: {
+  eventImage: {
     height: '100%',
-    width: 390,
-    marginRight: 10,
-    borderRadius: 5
-  },
-  promoImage: {
-    height: '100%',
-    width: width - 10,
-     
+    width: width * 0.90,
+    marginRight: width * 0.05,
     borderRadius: 5
   },
    buttonsContainer: {
     flexDirection: 'row',
     flexWrap: 'nowrap',
-    justifyContent: 'space-around',
-    height: "15%",
-    paddingTop: 10
+    justifyContent: 'space-evenly',
+    height: "13%",
+    paddingTop: 10,
+    //backgroundColor: 'green'
   },
   buttonWrapper: {
     alignItems: 'center',
-    marginRight: 0,
   },
   button: {
-    width: 50,
-    height: 50,
+    width: 45,
+    height: 45,
     borderRadius: 25,
     backgroundColor: '#fff',
     borderWidth: 1,
@@ -232,39 +227,42 @@ const styles = StyleSheet.create({
     height: 27, 
   },
   buttonLabel: {
-    marginTop: 0,
-    marginBottom: 0,
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "bold",
     color: '#000',
   },
   promoScroll: {
     paddingTop: 0,
     height: "15%",
-    width: "100%",
+    width: width,
+    borderRadius: 5
+  },
+  promoImage: {
+    height: '100%',
+    width: width * 0.98,
     borderRadius: 5
   },
   products:{
-    height:"40%",
-    paddingTop: 10
+    height:"42%",
+    paddingTop: 10,
   },
   productText:{
     fontWeight: 'bold',
     color: '#ff804a',
-    fontSize: 18
+    fontSize: 18,
   },
   separatorOrange: {
     height: 1,
     backgroundColor: '#ff804a',
     marginVertical: 5,
-    width: "98%",
+    width: width * 0.98,
     justifyContent: "center",
     marginBottom: 8
   },
   card: {
-    width: 145,
+    width: width * 0.33,
     height: '100%',
-    marginRight: 10,
+    marginRight: width * 0.02,
     backgroundColor: '#f9f9f9',
     borderRadius: 10,
     borderWidth: 2,
@@ -275,41 +273,42 @@ const styles = StyleSheet.create({
   },
   productNameContainer: {
     flexDirection: 'row',
-    alignItems: "center"
+    alignItems: "center",
   },
   productName: {
-    fontSize: 16,
-    marginBottom: 3
+    fontSize: 14,
+    marginBottom: 2
   },
   productIcon: {
     width: 15,
     height: 15,
     marginLeft: 5,
   },
-  imageContainer:{
-    borderRadius: 5
+  productImageContainer:{
+    borderRadius: 5,
+    height: "50%"
   },
   productImage: {
     width: '100%',
-    height: 80,
+    height: '100%',
     borderRadius: 5
   },
   productBrand: {
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'left',
   },
   productStatus: {
-    fontSize: 12,
+    fontSize: 10,
     textAlign: 'left',
     color: '#888',
   },
   separator: {
     height: 2,
     backgroundColor: '#d7d7d7',
-    marginVertical: 5,
+    marginVertical: 1,
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'left',
   },
