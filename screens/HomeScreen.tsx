@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList, ActivityIndicator } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
 import poster from '../assets/poster.jpg';
@@ -14,31 +14,38 @@ import evento1 from '../assets/evento1.jpg'
 import evento2 from '../assets/evento2.jpg'
 
 const { width } = Dimensions.get('window');
+const viewedConfig = { itemVisiblePercentThreshold: 26 };
 
 export default function HomeScreen() {
   const [images, setImages] = useState([poster, promocion, evento1, evento2]);
   const [isLoading, setIsLoading] = useState(false);
+  const [visibleItems, setVisibleItems] = useState<number[]>([]);
   
 
-  const renderItem = ({ item }: { item: any }) => (
-    <Image
-      source={item}
-      style={styles.eventImage}
-      resizeMode='cover'
-    />
-  );
+  const renderItem = ({ item, index }: { item: any, index: number }) => {
+    const isVisible = visibleItems.includes(index);
+    return (
+      <Image
+        source={item}
+        style={[
+          styles.eventImage,
+          { opacity: isVisible ? 1 : 0.5 } // Cambiar opacidad si está o no visible
+        ]}
+        resizeMode='cover'
+      />
+    );
+  };
 
-  const renderLoader = () => {
-    return(
-      <View>
-        <ActivityIndicator size="large" color="#aaa"></ActivityIndicator>
-      </View>
-    )
-  }
+ 
+
+  const onViewedItemsChanged = useRef(({ viewableItems }: any) => {
+    const visibleIndexes = viewableItems.map((item: any) => item.index);
+    setVisibleItems(visibleIndexes);
+  });
 
   const renderFooter = () => {
     return (
-      <View style={{ width: width * 0.90 + width * 0.05 }} />  // Espacio del tamaño de una imagen
+      <View style={{ width: width * 0.90 + width * 0.03 }} />  // Espacio del tamaño de una imagen
     );
   };
 
@@ -71,13 +78,15 @@ export default function HomeScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
               //ListFooterComponent={renderLoader}
-              snapToInterval={width * 0.90 + width * 0.05}
+              snapToInterval={width * 0.90 + width * 0.03}
               decelerationRate="fast"
               onEndReached={loadMoreItem}
               onEndReachedThreshold={1}
               //ListFooterComponent={isLoading ? renderLoader : null}
               ListFooterComponent={renderFooter}
-              extraData={images}
+              extraData={visibleItems}
+              onViewableItemsChanged={onViewedItemsChanged.current}
+              viewabilityConfig={viewedConfig}
             >
             </FlatList>
         </View>
@@ -196,7 +205,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    //marginHorizontal: '1%',
+    marginHorizontal: '1%',
   },
   scrollContent:{
     flexGrow: 1
@@ -206,13 +215,13 @@ const styles = StyleSheet.create({
     width: width,
     borderRadius: 5,
     paddingTop: 2,
-    backgroundColor: 'pink'
+    //backgroundColor: 'pink'
   },
   eventImage: {
     height: '100%',
     width: width * 0.90, 
     //width: "90%", 
-    marginRight: width * 0.05,
+    marginRight: width * 0.03,
     borderRadius: 5,
     backgroundColor: 'blue'
   },
