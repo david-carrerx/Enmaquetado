@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList, ActivityIndicator } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
 import poster from '../assets/poster.jpg';
 import promocion from "../assets/promocion.png"
@@ -18,10 +18,11 @@ const viewedConfig = { itemVisiblePercentThreshold: 26 };
 
 export default function HomeScreen() {
   const [images, setImages] = useState([poster, promocion, evento1, evento2]);
+  const [promoImages, setPromoImages] = useState([promocion, evento1, evento2]);
   const [isLoading, setIsLoading] = useState(false);
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
+  const [visibleItemsPromo, setVisibleItemsPromo] = useState<number[]>([]);
   
-
   const renderItem = ({ item, index }: { item: any, index: number }) => {
     const isVisible = visibleItems.includes(index);
     return (
@@ -29,38 +30,68 @@ export default function HomeScreen() {
         source={item}
         style={[
           styles.eventImage,
-          { opacity: isVisible ? 1 : 0.5 } // Cambiar opacidad si está o no visible
+          { opacity: isVisible ? 1 : 0.5 } 
         ]}
-        resizeMode='cover'
+        resizeMode='stretch'
       />
     );
   };
 
- 
+  const renderPromoItem = ({ item, index }: { item: any, index: number }) => {
+    const isVisible = visibleItemsPromo.includes(index);
+    return(
+    <Image
+      source={item}
+      style={[
+        styles.promoImage,
+        { opacity: isVisible ? 1 : 0.1 }
+        ]} 
+      resizeMode="stretch"
+    />
+    );
+  };
 
   const onViewedItemsChanged = useRef(({ viewableItems }: any) => {
     const visibleIndexes = viewableItems.map((item: any) => item.index);
     setVisibleItems(visibleIndexes);
   });
 
+  const onViewedItemsChangedPromo = useRef(({ viewableItems }: any) => {
+    const visibleIndexes = viewableItems.map((item: any) => item.index);
+    setVisibleItemsPromo(visibleIndexes);
+  });
+
   const renderFooter = () => {
     return (
-      <View style={{ width: width * 0.90 + width * 0.03 }} />  // Espacio del tamaño de una imagen
+      <View style={{ width: width * 0.90 + width * 0.03 }} /> 
+    );
+  };
+
+  const renderFooterPromo = () => {
+    return (
+      <View style={{ width: width * 0.92 + width * 0.03 }} /> 
     );
   };
 
   const loadMoreItem = () => {
     if (isLoading) return;
     setIsLoading(true);
-    
       setImages(prevImages => [
         ...prevImages,
         ...images
       ]);
-
       setIsLoading(false);
-    }; 
+  };
   
+  const loadMorePromoItems = () => {
+    if (isLoading) return;
+      setIsLoading(true);
+      setPromoImages(prevImages => [
+        ...prevImages,
+        ...promoImages 
+      ]);
+      setIsLoading(false);
+  };
   
   return (
     <View style={styles.container}>
@@ -125,8 +156,69 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.promoScroll}>
+            <FlatList
+              data={promoImages}
+              renderItem={renderPromoItem}
+              keyExtractor={(item, index) => index.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              snapToInterval={width * 0.92 + width * 0.03}
+              decelerationRate="fast"
+              ListFooterComponent={renderFooterPromo}
+              onEndReached={loadMorePromoItems} 
+              onEndReachedThreshold={1}
+              extraData={visibleItemsPromo}
+              onViewableItemsChanged={onViewedItemsChangedPromo.current}
+              viewabilityConfig={viewedConfig}
+              >
+            </FlatList>
+        </View>
+
+        <View style={styles.products}>
+            <Text style={styles.productText}>Los mejores productos 🔥</Text>
+            <View style={styles.separatorOrange} />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} >
-                <Image source={promocion}  style={styles.promoImage} resizeMode="stretch"/>
+            <View  style={styles.card}>
+                <View style={styles.productNameContainer}>
+                    <Text style={styles.productName}>Motocicleta</Text>
+                    <Image source={miniIcon} style={styles.productIcon} />
+                </View>
+                <View style={styles.productImageContainer}>
+                  <Image source={motorcycle} style={styles.productImage} resizeMode="cover" />
+                </View>
+                <Text style={styles.productBrand}>Italika 2023</Text>
+                <Text style={styles.productStatus}>Usado - Como nuevo</Text>
+                <View style={styles.separator} />
+                <Text style={styles.productPrice}>$15,000</Text>
+              </View>
+
+              <View  style={styles.card}>
+                <View style={styles.productNameContainer}>
+                  <Text style={styles.productName}>Motocicleta</Text>
+                  <Image source={miniIcon} style={styles.productIcon} />
+                </View>
+                <View style={styles.productImageContainer}>
+                  <Image source={motorcycle} style={styles.productImage} resizeMode="cover" />
+                </View>
+                <Text style={styles.productBrand}>Italika 2023</Text>
+                <Text style={styles.productStatus}>Usado - Como nuevo</Text>
+                <View style={styles.separator} />
+                <Text style={styles.productPrice}>$15,000</Text>
+              </View>
+
+              <View  style={styles.card}>
+              <View style={styles.productNameContainer}>
+                <Text style={styles.productName}>Motocicleta</Text>
+                <Image source={miniIcon} style={styles.productIcon} />
+                </View>
+                <View style={styles.productImageContainer}>
+                  <Image source={motorcycle} style={styles.productImage} resizeMode="cover" />
+                </View>
+                <Text style={styles.productBrand}>Italika 2023</Text>
+                <Text style={styles.productStatus}>Usado - Como nuevo</Text>
+                <View style={styles.separator} />
+                <Text style={styles.productPrice}>$15,000</Text>
+              </View>
             </ScrollView>
         </View>
 
@@ -228,7 +320,7 @@ const styles = StyleSheet.create({
    buttonsContainer: {
     flexDirection: 'row',
     flexWrap: 'nowrap',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-around',
     height: "13%",
     paddingTop: 10,
     //backgroundColor: 'green'
@@ -253,18 +345,21 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     fontSize: 10,
-    fontWeight: "bold",
-    color: '#000',
+    fontWeight: "300",
+    color: '#212121',
+    paddingTop: 1
   },
   promoScroll: {
-    paddingTop: 0,
     height: "15%",
+    //padding: "1%",
     width: width,
-    borderRadius: 5
+    borderRadius: 5,
+    //backgroundColor: 'pink'
   },
   promoImage: {
     height: '100%',
-    width: width * 0.98,
+    width: width * 0.92,
+    marginLeft: width * 0.03,
     borderRadius: 5
   },
   products:{
