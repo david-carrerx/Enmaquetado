@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, Image } from 'react-native';
-import searchIcon from '../assets/search.png'; // Asegúrate de que la ruta sea correcta
+import searchIcon from '../assets/search.png'; 
 
 const SearchBar: React.FC = () => {
   return (

@@ -10,11 +10,13 @@ import moreIcon from '../assets/plus.png'
 import motoIcon from '../assets/moto.png'
 import promoIcon from '../assets/promo.png'
 import miniIcon from '../assets/iconMoto.png'
+import evento1 from '../assets/evento1.jpg'
+import evento2 from '../assets/evento2.jpg'
 
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const [images, setImages] = useState([poster, promocion]);
+  const [images, setImages] = useState([poster]);
   const [isLoading, setIsLoading] = useState(false);
 
   const renderItem = ({ item }: { item: any }) => (
@@ -39,8 +41,7 @@ export default function HomeScreen() {
     setTimeout(() => {
       setImages(prevImages => [
         ...prevImages,
-        poster, 
-        promocion
+        ...images
       ]);
       setIsLoading(false);
     }, 0); 
@@ -48,10 +49,11 @@ export default function HomeScreen() {
   
   return (
     <View style={styles.container}>
-        <View style={styles.header}>
+      <View style={styles.header}>
         <Text style={styles.headerTitle}>Bikermarket</Text>
         <SearchBar />
       </View>
+      
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.imagesScroll}>
             <FlatList
@@ -61,6 +63,8 @@ export default function HomeScreen() {
               horizontal
               showsHorizontalScrollIndicator={false}
               //ListFooterComponent={renderLoader}
+              snapToInterval={width * 0.90 + width * 0.05}
+              decelerationRate="fast"
               onEndReached={loadMoreItem}
               onEndReachedThreshold={0}
               ListFooterComponent={isLoading ? renderLoader : null}
@@ -182,7 +186,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-    marginHorizontal: '1%',
+    //marginHorizontal: '1%',
   },
   scrollContent:{
     flexGrow: 1
@@ -196,9 +200,10 @@ const styles = StyleSheet.create({
   },
   eventImage: {
     height: '100%',
-    width: width * 0.90,
+    width: width * 0.90, 
     marginRight: width * 0.05,
-    borderRadius: 5
+    borderRadius: 5,
+    backgroundColor: 'blue'
   },
    buttonsContainer: {
     flexDirection: 'row',
