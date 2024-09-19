@@ -16,8 +16,9 @@ import evento2 from '../assets/evento2.jpg'
 const { width } = Dimensions.get('window');
 
 export default function HomeScreen() {
-  const [images, setImages] = useState([poster]);
+  const [images, setImages] = useState([poster, promocion, evento1, evento2]);
   const [isLoading, setIsLoading] = useState(false);
+  
 
   const renderItem = ({ item }: { item: any }) => (
     <Image
@@ -35,17 +36,24 @@ export default function HomeScreen() {
     )
   }
 
+  const renderFooter = () => {
+    return (
+      <View style={{ width: width * 0.90 + width * 0.05 }} />  // Espacio del tamaño de una imagen
+    );
+  };
+
   const loadMoreItem = () => {
     if (isLoading) return;
     setIsLoading(true);
-    setTimeout(() => {
+    
       setImages(prevImages => [
         ...prevImages,
         ...images
       ]);
+
       setIsLoading(false);
-    }, 0); 
-  }  
+    }; 
+  
   
   return (
     <View style={styles.container}>
@@ -66,8 +74,10 @@ export default function HomeScreen() {
               snapToInterval={width * 0.90 + width * 0.05}
               decelerationRate="fast"
               onEndReached={loadMoreItem}
-              onEndReachedThreshold={0}
-              ListFooterComponent={isLoading ? renderLoader : null}
+              onEndReachedThreshold={1}
+              //ListFooterComponent={isLoading ? renderLoader : null}
+              ListFooterComponent={renderFooter}
+              extraData={images}
             >
             </FlatList>
         </View>
@@ -201,6 +211,7 @@ const styles = StyleSheet.create({
   eventImage: {
     height: '100%',
     width: width * 0.90, 
+    //width: "90%", 
     marginRight: width * 0.05,
     borderRadius: 5,
     backgroundColor: 'blue'
