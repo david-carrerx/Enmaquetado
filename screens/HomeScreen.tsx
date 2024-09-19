@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
 import poster from '../assets/poster.jpg';
@@ -22,6 +22,38 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const [visibleItemsPromo, setVisibleItemsPromo] = useState<number[]>([]);
+  const flatListRef = useRef<FlatList>(null);
+  const flatListPromoRef = useRef<FlatList>(null); 
+
+  useEffect(() => {
+    const intervalImages = setInterval(() => {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToIndex({
+          index: (visibleItems[0] || 0) + 1,
+          viewOffset: 0,
+          viewPosition: 0.5,
+          animated: true,
+        });
+      }
+    }, 7000);
+
+    return () => clearInterval(intervalImages);
+  }, [visibleItems]);
+
+  useEffect(() => {
+    const intervalPromo = setInterval(() => {
+      if (flatListPromoRef.current) {
+        flatListPromoRef.current.scrollToIndex({
+          index: (visibleItemsPromo[0] || 0) + 1,
+          viewOffset: 0,
+          viewPosition: 0.5,
+          animated: true,
+        });
+      }
+    }, 3000);
+
+    return () => clearInterval(intervalPromo);
+  }, [visibleItemsPromo]);
   
   const renderItem = ({ item, index }: { item: any, index: number }) => {
     const isVisible = visibleItems.includes(index);
@@ -69,7 +101,7 @@ export default function HomeScreen() {
 
   const renderFooterPromo = () => {
     return (
-      <View style={{ width: width * 0.92 + width * 0.03 }} /> 
+      <View style={{ width: width * 0.92 + width * 0.04 }} /> 
     );
   };
 
@@ -103,6 +135,7 @@ export default function HomeScreen() {
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
         <View style={styles.imagesScroll}>
             <FlatList
+              ref={flatListRef}
               data={images}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
@@ -157,12 +190,13 @@ export default function HomeScreen() {
 
         <View style={styles.promoScroll}>
             <FlatList
+              ref={flatListPromoRef}
               data={promoImages}
               renderItem={renderPromoItem}
               keyExtractor={(item, index) => index.toString()}
               horizontal
               showsHorizontalScrollIndicator={false}
-              snapToInterval={width * 0.92 + width * 0.03}
+              snapToInterval={width * 0.92 + width * 0.04}
               decelerationRate="fast"
               ListFooterComponent={renderFooterPromo}
               onEndReached={loadMorePromoItems} 
@@ -354,12 +388,15 @@ const styles = StyleSheet.create({
     //padding: "1%",
     width: width,
     borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'center'
     //backgroundColor: 'pink'
   },
   promoImage: {
     height: '100%',
     width: width * 0.92,
-    marginLeft: width * 0.03,
+    //marginLeft: width * 0.04,
+    marginHorizontal: width * 0.04,
     borderRadius: 5
   },
   products:{
@@ -369,7 +406,7 @@ const styles = StyleSheet.create({
   productText:{
     fontWeight: 'bold',
     color: '#ff804a',
-    fontSize: 18,
+    fontSize: 16,
   },
   separatorOrange: {
     height: 1,
