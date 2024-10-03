@@ -1,12 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
-import poster from '../assets/poster.jpg';
-import poster2 from '../assets/poster2.jpg'
-import poster3 from '../assets/evento1.jpg'
-import promocion from "../assets/promocion.png"
-import promocion2 from "../assets/promocion2.jpg"
-import promocion3 from "../assets/promocion3.jpeg"
+import { fetchMainBanners, fetchPromoBanners } from './useBanners';
+
 import motorcycle from "../assets/motorcycle.jpg"
 import socialIcon from '../assets/social.png';
 import cartIcon from '../assets/cart.png';
@@ -19,16 +15,28 @@ const { width } = Dimensions.get('window');
 const viewedConfig = { itemVisiblePercentThreshold: 26 };
 
 export default function HomeScreen() {
-  const images = [poster, poster2 ,poster3];
-  const promoImages =[promocion, promocion2, promocion3];
+  //const images = [promocion2, promocion];
+  const [images, setImages] = useState<string[]>([]);
+  const [promoImages, setPromoImages] = useState<string[]>([]);
+  //const promoImages =[promocion, promocion2, promocion3];
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const [visibleItemsPromo, setVisibleItemsPromo] = useState<number[]>([]);
   const flatListRef = useRef<FlatList>(null);
   const flatListPromoRef = useRef<FlatList>(null); 
 
   useEffect(() => {
+    const unsubscribe = fetchMainBanners(setImages);
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = fetchPromoBanners(setPromoImages);
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     const intervalImages = setInterval(() => {
-      if (flatListRef.current) {
+      if (flatListRef.current && images.length > 0) {
         const currentIndex = visibleItems[0] || 0;
         const nextIndex = currentIndex + 1;
   
@@ -51,12 +59,12 @@ export default function HomeScreen() {
     }, 7000);
   
     return () => clearInterval(intervalImages);
-  }, [visibleItems]);
+  }, [visibleItems, images]);
   
 
   useEffect(() => {
     const intervalImages = setInterval(() => {
-      if (flatListPromoRef.current) {
+      if (flatListPromoRef.current && promoImages.length > 0) {
         const currentIndex = visibleItemsPromo[0] || 0;
         const nextIndex = currentIndex + 1;
   
@@ -79,13 +87,13 @@ export default function HomeScreen() {
     }, 3000);
   
     return () => clearInterval(intervalImages);
-  }, [visibleItemsPromo]);
+  }, [visibleItemsPromo, promoImages]);
   
-  const renderItem = ({ item, index }: { item: any, index: number }) => {
+  const renderItem = ({ item, index }: { item: string, index: number }) => {
     const isVisible = visibleItems.includes(index);
     return (
       <Image
-        source={item}
+        source={{uri: item}}
         style={[
           styles.eventImage,
           { opacity: isVisible ? 1 : 0.5 } 
@@ -95,11 +103,11 @@ export default function HomeScreen() {
     );
   };
 
-  const renderPromoItem = ({ item, index }: { item: any, index: number }) => {
+  const renderPromoItem = ({ item, index }: { item: string, index: number }) => {
     const isVisible = visibleItemsPromo.includes(index);
     return(
     <Image
-      source={item}
+      source={{uri: item}}
       style={[
         styles.promoImage,
         { opacity: isVisible ? 1 : 0.1 }
