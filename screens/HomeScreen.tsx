@@ -2,23 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions, FlatList } from 'react-native';
 import SearchBar from '../components/SearchBar'; 
 import { fetchMainBanners, fetchPromoBanners } from './useBanners';
-
 import motorcycle from "../assets/motorcycle.jpg"
-import socialIcon from '../assets/social.png';
-import cartIcon from '../assets/cart.png';
+import socialIcon from '../assets/sociales-icon.png';
+import marketplaceIcon from '../assets/marketplace-icon.png';
 import moreIcon from '../assets/plus.png'
-import motoIcon from '../assets/moto.png'
-import promoIcon from '../assets/promo.png'
+import eventIcon from '../assets/eventos-icon.png'
+import promoIcon from '../assets/promo-icon.png'
 import miniIcon from '../assets/iconMoto.png'
 
 const { width } = Dimensions.get('window');
 const viewedConfig = { itemVisiblePercentThreshold: 26 };
 
 export default function HomeScreen() {
-  //const images = [promocion2, promocion];
   const [images, setImages] = useState<string[]>([]);
   const [promoImages, setPromoImages] = useState<string[]>([]);
-  //const promoImages =[promocion, promocion2, promocion3];
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const [visibleItemsPromo, setVisibleItemsPromo] = useState<number[]>([]);
   const flatListRef = useRef<FlatList>(null);
@@ -156,13 +153,13 @@ export default function HomeScreen() {
         <View style={styles.buttonsContainer}>
             <View style={styles.buttonWrapper}>
               <TouchableOpacity style={styles.button}>
-                <Image source={motoIcon} style={styles.icon} />
+                <Image source={eventIcon} style={styles.icon} />
               </TouchableOpacity>
               <Text style={styles.buttonLabel}>Eventos</Text>
             </View>
             <View style={styles.buttonWrapper}>
               <TouchableOpacity style={styles.button}>
-                <Image source={cartIcon} style={styles.icon} />
+                <Image source={marketplaceIcon} style={styles.icon} />
               </TouchableOpacity>
               <Text style={styles.buttonLabel}>Marketplace</Text>
             </View>
@@ -322,8 +319,8 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   icon: {
-    width: 27, 
-    height: 27, 
+    width: "90%", 
+    height: "90%", 
   },
   buttonLabel: {
     fontSize: 10,
